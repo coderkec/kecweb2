@@ -1,0 +1,61 @@
+---
+#대상 test
+#패키지 설치 - vsftpd, ftp
+#서비스 설정 - /etc/vsftpd/*
+#	- vsftpd.conf
+#	- user_list
+#	- ftpusers
+#서비스 기동 - vsftpd
+#방화벽 등록 - ftp
+- name: 1) Install the packages - vsftpd, ftp
+  hosts: test
+  tasks:
+    - name: Install packages - vsftpd, ftp, firewalld
+      ansible.builtin.dnf:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - vsftpd
+        - ftp
+        - firewalld
+
+    - name: 2) Enable the service - vsftpd, firewalld
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - vsftpd
+        - firewalld
+
+    - name: 3) Open the ports - ftp
+      ansible.posix.firewalld:
+        service: ftp
+        state: enabled
+        permanent: true
+        immediate: true
+
+    - name: 4) Configuring the services - vsftpd.conf
+      ansible.builtin.lineinfile:
+        path: /etc/vsftpd/vsftpd.conf
+        regexp: '^anonymous_enable'
+        line: 'anonymous_enable=NO'
+      ignore_errors: yes
+      notify: restart vsftpd
+
+    - name: 4) Configuring the services - ftpusers
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        regexp: '^root'
+        line: ''
+      loop: [ /etc/vsftpd/ftpusers, /etc/vsftpd/user_list ]
+      notify: restart vsftpd
+
+  handlers:
+    - name: restart vsftpd
+      ansible.builtin.service:
+        name: vsftpd
+        state: restarted
+
+
+  

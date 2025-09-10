@@ -1,0 +1,39 @@
+---
+# tasks file for roles/apache
+# 1) Install the packages - htppd, mod_ssl, firewalld
+# 2) Configure the services
+#   * index.html.j2 -> /var/www/html/index.html
+# 3) Start the services - httpd, firewalld
+# 4) Open the ports - firewalld, https, http
+- name: 1) Install the packages - httpd, mode_ssl, firewalld
+  ansible.builtin.dnf:
+    name:
+      - httpd
+      - mod_ssl
+      - firewalld
+    state: present
+
+- name: 2) Configure the services 
+  ansible.builtin.template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+    mode: '0644'
+
+- name: 3) Start the services - httpd, firewalld
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop:
+    - httpd
+    - firewalld
+
+- name: 4) Open the ports - firewalld, httpd
+  ansible.posix.firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - https
+    - http

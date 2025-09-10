@@ -1,0 +1,18 @@
+---
+- name: Time sync
+  hosts: all
+  tasks:
+    - name: Manage timesync with 3 servers
+      community.general.timezone:
+         name: Asia/Seoul
+
+    - name: time sync
+      ansible.builtin.include_role:
+        name: fedora.linux_system_roles.timesync 
+      vars:
+        timesync_ntp_servers:
+          - hostname: kr.pool.ntp.org
+            iburst: true
+
+        
+

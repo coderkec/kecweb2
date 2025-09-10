@@ -1,0 +1,28 @@
+---
+- name: LVM Tasks
+  hosts: webservers
+  tasks:
+    - name: Check the device - /dev/sdb
+      ansible.builtin.fail:
+        msg: The device does not exist
+      when: ansible_devices.sdb is not defined
+
+    - name: Block ~ Rescue
+      block:
+        - name: Create the partition - /dev/sdb(800Mib)
+          community.general.parted:
+            device: /dev/sdb
+            number: 1
+            state: present
+            part_start: 1MiB
+            part_end: 800MiB
+
+      rescue:
+        - name: Print the error message
+          ansible.builtin.debug:
+            msg: "Size not Enough"
+
+    - name: Create the vg
+      ansible.builtin.lvg:
+        
+          

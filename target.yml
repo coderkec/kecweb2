@@ -1,0 +1,17 @@
+---
+- name: Make a target file.yml
+  hosts: all
+  vars:
+        # graphical.target
+    target: multi-user.target
+  tasks:
+    - name: 1) Change the default target at boot time
+      # systemctl set-default multi-user.target
+      # systemctl isolate multi-user.target
+      ansible.builtin.command: 
+        cmd: systemctl set-default {{ target }}
+
+    - name: 2) Change the default target right now
+      ansible.builtin.command: 
+        cmd: systemctl isolate {{ target }}
+

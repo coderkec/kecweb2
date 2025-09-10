@@ -1,0 +1,27 @@
+---
+- name: TEST
+  hosts: dev,test
+  vars:
+    users:
+      - username: developer
+        groups: daemon
+      - username: manager
+        groups: adm
+  tasks:
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "Variable - {{ users[0].username }}"
+
+- name: TEST
+  hosts: dev,test
+  vars:
+    users:
+      - username: developer
+        groups: daemon
+      - username: manager
+        groups: adm
+  tasks:
+    - name: Debug
+      ansible.builtin.debug:
+        msg: "Variable - {{ users[1].username }}"
+

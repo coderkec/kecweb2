@@ -1,0 +1,7 @@
+---
+collections:
+- name: ansible.posix
+  source: https://galaxy.ansible.com
+- name: imp1sh.ansible_managemynetwork
+  source: https://galaxy.ansible.com
+- name: "http://192.168.10.10/collections/fedora-linux_system_roles-1.109.0.tar.gz"
